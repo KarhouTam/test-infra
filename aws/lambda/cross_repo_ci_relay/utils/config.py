@@ -17,7 +17,7 @@ class RelaySecrets:
         region = os.environ.get("AWS_REGION", "us-east-1")
         try:
             if client is None:
-                client = boto3.session.Session().client(
+                client = boto3.client(
                     "secretsmanager",
                     region_name=region,
                     config=Config(retries={"max_attempts": 3, "mode": "standard"}),
@@ -57,6 +57,11 @@ class RelayConfig:
     redis_login: str
     allowlist_ttl_seconds: int
     max_dispatch_workers: int
+    hud_api_url: str
+    hud_bot_key: str
+    result_callback_url: str
+    callback_token_ttl: int
+    oot_status_ttl: int
 
     @classmethod
     def from_env(cls) -> "RelayConfig":
@@ -112,6 +117,16 @@ class RelayConfig:
         # avoidable rate-limit risk in production.
         allowlist_ttl_seconds = max(allowlist_ttl_seconds, 900)
 
+        try:
+            callback_token_ttl = int(os.getenv("CALLBACK_TOKEN_TTL", "86400"))
+        except ValueError:
+            raise RuntimeError("CALLBACK_TOKEN_TTL must be a valid integer")
+
+        try:
+            oot_status_ttl = int(os.getenv("OOT_STATUS_TTL", "3600"))
+        except ValueError:
+            raise RuntimeError("OOT_STATUS_TTL must be a valid integer")
+
         return cls(
             github_app_id=_require("GITHUB_APP_ID"),
             github_app_secret=github_app_secret,
@@ -122,4 +137,9 @@ class RelayConfig:
             redis_login=redis_login,
             allowlist_ttl_seconds=allowlist_ttl_seconds,
             max_dispatch_workers=int(os.getenv("MAX_DISPATCH_WORKERS", "32")),
+            hud_api_url=os.getenv("HUD_API_URL", ""),
+            hud_bot_key=os.getenv("HUD_BOT_KEY", ""),
+            result_callback_url=os.getenv("RESULT_CALLBACK_URL", ""),
+            callback_token_ttl=callback_token_ttl,
+            oot_status_ttl=oot_status_ttl,
         )

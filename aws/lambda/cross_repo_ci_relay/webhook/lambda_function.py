@@ -6,9 +6,9 @@ import hmac
 import json
 import logging
 
-import event_handler
-from config import RelayConfig
-from utils import HTTPException
+from . import event_handler
+from utils.config import RelayConfig
+from utils.misc import HTTPException
 
 
 logging.getLogger().setLevel(logging.INFO)

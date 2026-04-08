@@ -1,0 +1,16 @@
+{
+  "params": {
+    "head_sha": "String",
+    "downstream_repo": "String"
+  },
+  "tests": [
+    {
+      "head_sha": "abc123def456",
+      "downstream_repo": ""
+    },
+    {
+      "head_sha": "abc123def456",
+      "downstream_repo": "org/repo"
+    }
+  ]
+}
